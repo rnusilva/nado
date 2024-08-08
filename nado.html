@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treino Cronômetro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button#startButton {
+            background-color: #4caf50;
+        }
+        button#stopButton {
+            background-color: #f44336;
+        }
+        .roundButton {
+            background-color: #2196F3;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 18px;
+            margin: 5px;
+            color: #fff;
+            cursor: pointer;
+        }
+        .roundButton:disabled {
+            background-color: #9e9e9e;
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+        #timer {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        .button-group {
+            margin: 20px 0;
+        }
+        .labels {
+            font-size: 18px;
+        }
+        #finalMessage {
+            display: none;
+            color: red;
+            font-weight: bold;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button id="startButton">Iniciar</button>
+        <button id="stopButton" disabled>Finalizar Treino</button>
+        <div id="timer">Tempo: 00:00:00</div>
+        
+        <div class="button-group">
+            <button class="roundButton" data-value="1">1</button>
+            <button class="roundButton" data-value="2">2</button>
+            <button class="roundButton" data-value="3">3</button>
+            <button class="roundButton" data-value="4">4</button>
+            <button class="roundButton" data-value="5">5</button>
+            <button class="roundButton" data-value="6">6</button>
+            <button class="roundButton" data-value="7">7</button>
+            <button class="roundButton" data-value="8">8</button>
+            <button class="roundButton" data-value="9">9</button>
+            <button class="roundButton" data-value="10">10</button>
+        </div>
+        
+        <div class="labels">
+            <div id="lapsLabel">Número de voltas: 0</div>
+            <div id="distanceLabel">Distância: 0 metros</div>
+        </div>
+
+        <div id="finalMessage">Treino finalizado</div>
+    </div>
+
+    <script>
+        let startTime, timerInterval;
+        let totalLaps = 0;
+        const lapDistance = 24; // Distância por volta em metros
+
+        function updateTimer() {
+            const elapsed = new Date() - startTime;
+            const hours = String(Math.floor(elapsed / (1000 * 60 * 60))).padStart(2, '0');
+            const minutes = String(Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+            const seconds = String(Math.floor((elapsed % (1000 * 60)) / 1000)).padStart(2, '0');
+            document.getElementById('timer').textContent = `Tempo: ${hours}:${minutes}:${seconds}`;
+        }
+
+        function updateLabels() {
+            document.getElementById('lapsLabel').textContent = `Número de voltas: ${totalLaps}`;
+            document.getElementById('distanceLabel').textContent = `Distância: ${totalLaps * lapDistance} metros`;
+        }
+
+        document.getElementById('startButton').addEventListener('click', () => {
+            startTime = new Date();
+            timerInterval = setInterval(updateTimer, 1000);
+            document.getElementById('startButton').disabled = true;
+            document.getElementById('stopButton').disabled = false;
+            document.querySelectorAll('.roundButton').forEach(button => button.disabled = false);
+            document.getElementById('finalMessage').style.display = 'none'; // Esconder mensagem de finalização
+        });
+
+        document.getElementById('stopButton').addEventListener('click', () => {
+            clearInterval(timerInterval);
+            document.getElementById('startButton').disabled = true;
+            document.getElementById('stopButton').disabled = true;
+            document.querySelectorAll('.roundButton').forEach(button => button.disabled = true);
+            document.getElementById('finalMessage').style.display = 'block'; // Mostrar mensagem de finalização
+        });
+
+        document.querySelectorAll('.roundButton').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const laps = parseInt(event.target.getAttribute('data-value'));
+                totalLaps += laps;
+                updateLabels();
+            });
+        });
+    </script>
+</body>
+</html>
